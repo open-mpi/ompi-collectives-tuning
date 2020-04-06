@@ -1,0 +1,7 @@
+collectives : allgather allgatherv allreduce alltoall alltoallv barrier bcast gather reduce reduce_scatter_block reduce_scatter scatter
+omb_collective_directory : /path/to/install/libexec/osu-micro-benchmarks/mpi/collective/
+imb_binary : /path/to/install/IMB-MPI1
+number_of_ranks : 2 4 8 16 32 64
+max_num_node : 2
+number_of_cores_per_node : 36
+number_of_runs_per_test : 3
