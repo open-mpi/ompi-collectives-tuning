@@ -16,7 +16,7 @@ Collectives Tuning
 Prerequisites:
 
         Python2.7
-        SGE scheduler
+        SGE scheduler/Slurm scheduler
         OSU Micro Benchmarks
         Intel Micro Benchmarks
 
@@ -80,7 +80,16 @@ If you need to adjust the number of algorithms or exclude certain
 algorithms, please adjust the file "./collective_jobs/<collective>.job"
 
 In order to run the scripts, please run inside this directory
-"./run_and_analyze.sh -c <your config file>"
+```
+./run_and_analyze.sh -c <your config file>
+```
+
+If you wish to run with slurm instead of SGE, you must pass the "--with-slurm"
+flag. It is recommended to run this flag inside tmux, screen, or similar
+software as the slurm -W flag is utilized.
+```
+./run_and_analyze.sh -c <your config file> --with-slurm
+```
 
 This script will run and analyze all collectives specified. The output
 will be saved under the ./output directory.
