@@ -349,7 +349,7 @@ def writeDecision(config, dir_path, outfil):
             best = Params( output_dir+"/"+collective+"/best.out" )
             best_alg = 0
             num_sizes = 1
-            size_output = ""
+            size_output = "0 0 0 0\n"
             for i,msg_siz in enumerate(nod_result.msgsizlst()):
                 new_alg = nod_result.selectAlg()[i]
                 if new_alg == best_alg:
@@ -358,8 +358,8 @@ def writeDecision(config, dir_path, outfil):
                 num_sizes += 1
                 # Needs a size 0 or it won't pick up any other message size.
                 # This will shift our first tuned size to 0
-                if i==0:
-                    size_output += "0"
+                if i==0 and msg_siz==0:
+                    size_output = "0"
                 else:
                     size_output += str(msg_siz)
                 size_output += " " + str(best_alg)
