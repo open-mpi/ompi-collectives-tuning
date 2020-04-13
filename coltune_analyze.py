@@ -348,20 +348,23 @@ def writeDecision(config, dir_path, outfil):
             print >> f, "%-10s" % num_rank, "# Com size"
             best = Params( output_dir+"/"+collective+"/best.out" )
             best_alg = 0
-            num_sizes = 1
-            size_output = ""
+            # Open MPI requires that all data should start from msg size 0.
+            # The default one is `0 0 0 0\n`
+            # For collective data starts from msg size 0 (barrier or
+            # collectives benchmarked by IMB) this line could be updated.
+            if nod_result.msgsizlst()[0] == 0:
+                num_sizes = 0
+                size_output = ""
+            else:
+                num_sizes = 1
+                size_output = "0 0 0 0\n"
             for i,msg_siz in enumerate(nod_result.msgsizlst()):
                 new_alg = nod_result.selectAlg()[i]
                 if new_alg == best_alg:
                     continue
                 best_alg = new_alg
                 num_sizes += 1
-                # Needs a size 0 or it won't pick up any other message size.
-                # This will shift our first tuned size to 0
-                if i==0:
-                    size_output += "0"
-                else:
-                    size_output += str(msg_siz)
+                size_output += str(msg_siz)
                 size_output += " " + str(best_alg)
                 size_output += " 0"
                 size_output += " 0\n"
