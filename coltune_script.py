@@ -18,9 +18,11 @@ def main():
     from os import system
     from sys import argv
     from common import Params
+    import sys
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     config = Params( argv[1] )
+    scheduler = argv[2]
     collective_list = config.getStrlst("collectives")
     omb_path = config.getStr("omb_collective_directory")
     imb_bin = config.getStr("imb_binary")
@@ -49,14 +51,25 @@ def main():
         f = open(dir_path+"/output/"+collective+"/"+collective+"_coltune.sh", "w")
         print >> f, "#!/bin/sh"
         print >> f, "#"
-        print >> f, "#$ -j y"
-        print >> f, "#$ -pe mpi %d" % (max_num_node * num_core_per_node)
-        print >> f, "#"
-        print >> f, "#$ -cwd"
-        print >> f, "#"
-        print >> f, "echo Got $NSOLTS processors."
-        print >> f, ""
+        if scheduler == "slurm":
+            print >> f, "#SBATCH --job-name="+collective
+            print >> f, "#SBATCH --output=res.txt"
+            print >> f, "#"
+            print >> f, "#SBATCH --ntasks-per-node="+str(num_core_per_node)
+            print >> f, "#SBATCH --time=1000:00:00"
+            print >> f, "#SBATCH --nodes="+str(max_num_node)
+        elif scheduler == "sge":
+            print >> f, "#$ -j y"
+            print >> f, "#$ -pe mpi %d" % (max_num_node * num_core_per_node)
+            print >> f, "#"
+            print >> f, "#$ -cwd"
+            print >> f, "#"
+            print >> f, "echo Got $NSOLTS processors."
+        else:
+            print "Unknown scheduler. Aborting.."
+            sys.exit()
 
+        print >> f, ""
  
         for num_rank in num_rank_list:
             for alg in range(num_alg+1):
