@@ -89,7 +89,7 @@ def main():
                 print("", file=f)
 
         f.close()
-        print("SGE script wrote to "+collective+"_coltune.sh successfully!")
+        print("Creating jobscript %s_coltune.sh ... success!" % collective)
 
 if __name__ == "__main__":
     main()
