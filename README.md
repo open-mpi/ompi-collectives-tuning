@@ -15,7 +15,7 @@ Collectives Tuning
 
 Prerequisites:
 
-        Python2.7
+        Python3.6
         SGE scheduler/Slurm scheduler
         OSU Micro Benchmarks
         Intel Micro Benchmarks
