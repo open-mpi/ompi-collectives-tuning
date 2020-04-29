@@ -289,7 +289,7 @@ def writeDetail(params, coll_result, outfil, num_alg, exclude_alg, two_proc_alg,
         if alg in exclude_alg:
             continue
         print >> f, "%-20s" % alg,
-
+    print >> f, ""
     for num_rank in num_rank_list:
         result = coll_result[num_rank]
         for i,msg_siz in enumerate(result.msgsizlst()):
