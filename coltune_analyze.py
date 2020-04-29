@@ -215,6 +215,8 @@ class NumRankResult:
 
         for i in xrange(len(self.m_msgsizlst)):
             for alg in self.m_result.keys():
+                if alg == 0:
+                    continue
                 result = self.m_result[alg]
                 if (self.m_selectAlg[i] is None) or self.m_selectLat[i] > result.latlst()[i]:
                         self.m_selectAlg[i] = alg
@@ -289,7 +291,7 @@ def writeDetail(params, coll_result, outfil, num_alg, exclude_alg, two_proc_alg,
         if alg in exclude_alg:
             continue
         print >> f, "%-20s" % alg,
-
+    print >> f, ""
     for num_rank in num_rank_list:
         result = coll_result[num_rank]
         for i,msg_siz in enumerate(result.msgsizlst()):
