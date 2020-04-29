@@ -215,6 +215,8 @@ class NumRankResult:
 
         for i in xrange(len(self.m_msgsizlst)):
             for alg in self.m_result.keys():
+                if alg == 0:
+                    continue
                 result = self.m_result[alg]
                 if (self.m_selectAlg[i] is None) or self.m_selectLat[i] > result.latlst()[i]:
                         self.m_selectAlg[i] = alg
