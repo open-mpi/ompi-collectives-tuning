@@ -79,6 +79,19 @@ and number of runs.
 If you need to adjust the number of algorithms or exclude certain
 algorithms, please adjust the file "./collective_jobs/<collective>.job"
 
+IMPORTANT NOTE: The number of algorithms differ between open mpi versions.
+Please make sure the algorithm count is correct. Algorithm counts were
+derived from OMPI 4.x.x branch. This can be found in:
+ompi/ompi/mca/coll/tuned/coll_tuned_<collective>_decision.c under
+<collective>_algorithms[].
+
+Use this scatter job for master:
+```
+number_of_algorithms : 3
+exclude_algorithms :
+two_proc_alg :
+```
+
 In order to run the scripts, please run inside this directory
 ```
 ./run_and_analyze.sh -c <your config file>
