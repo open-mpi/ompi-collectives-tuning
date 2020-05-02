@@ -11,15 +11,14 @@
 class Params:
 
     def __init__(self, filnam):
-        from string import strip, split
         self.m_params = {}
         f = open(filnam)
         l = f.readline()
         while len(l):
             if l[0]!='#':
-                itmlst = split(l, ":")
+                itmlst = l.split( ":")
                 if len(itmlst)==2:
-                    self.m_params[strip(itmlst[0])] = strip(itmlst[1])
+                    self.m_params[itmlst[0].strip()] = itmlst[1].strip()
 
             l = f.readline()
 
@@ -27,21 +26,17 @@ class Params:
         return self.m_params[key]
 
     def getStrlst(self, key):
-        from string import split
-        return split(self.m_params[key])
+        return self.m_params[key].split()
 
     def getInt(self, key):
-        from string import atoi
-        return atoi(self.getStr(key))
+        return int(self.getStr(key))
 
     def getIntlst(self, key):
-        from string import atoi, split
-        strlst = split(self.getStr(key))
-        intlst = [atoi(s) for s in strlst]
+        strlst = self.getStr(key).split()
+        intlst = [int(s) for s in strlst]
         return intlst
 
     def getFloatlst(self, key):
-        from string import split
-        strlst = split(self.getStr(key))
+        strlst = self.getStr(key).split()
         floatlst = [float(s) for s in strlst]
         return floatlst

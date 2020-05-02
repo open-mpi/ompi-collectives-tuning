@@ -44,17 +44,16 @@ def load_single_result(file_name, collective):
         return load_omb_single_result(file_name, collective)
 
 def load_imb_single_result(file_name, collective):
-    from string import atoi, atof, split
     try:
         f = open(file_name)
     except Exception as e:
-        print "Error, cannot find file "+file_name+". Exiting.."
+        print("Error, cannot find file "+file_name+". Exiting..")
         sys.exit()
     l = f.readline()
     while l.find("Benchmarking") < 0:
         l = f.readline()
         if l == "":
-            print "Error parsing "+file_name+" No data found. Exiting.."
+            print("Error parsing "+file_name+" No data found. Exiting..")
             sys.exit()
     result = []
     l = f.readline()
@@ -82,39 +81,38 @@ def load_imb_single_result(file_name, collective):
 
     l = f.readline()
     while len(l) > 0:
-        itmlst = split(l)
+        itmlst = l.split()
         if len(itmlst) == expected_len:
             try:
                 if collective == "barrier":
                     msg_siz = 0
                 else:
-                    msg_siz = atoi(itmlst[0])
-                lat = atof(itmlst[avg_lat_column])
+                    msg_siz = int(itmlst[0])
+                lat = float(itmlst[avg_lat_column])
                 result.append((msg_siz,lat))
             except Exception as e:
-                print "Error parsing "+file_name+". Data corrupted. Exiting.."
+                print("Error parsing "+file_name+". Data corrupted. Exiting..")
                 sys.exit()
         elif len(itmlst) == 0:
             break
         else:
-            print "Error parsing "+file_name+". Data format doesn't match. Exiting.."
+            print("Error parsing "+file_name+". Data format doesn't match. Exiting..")
             sys.exit()
         l = f.readline()
     return result
 
 def load_omb_single_result(file_name, collective):
-    from string import atoi, atof, split
     try:
         f = open(file_name)
     except Exception as e:
-        print "Error, cannot find file "+file_name+". Exiting.."
+        print("Error, cannot find file "+file_name+". Exiting..")
         sys.exit()
     l = f.readline()
     l = f.readline()
     while l.find("#")==0:
         l = f.readline()
         if l == "":
-            print "Error parsing "+file_name+" No data found. Exiting.."
+            print("Error parsing "+file_name+" No data found. Exiting..")
             sys.exit()
     result = []
     if (collective == "barrier"):
@@ -124,20 +122,20 @@ def load_omb_single_result(file_name, collective):
         expected_len = 2
         avg_lat_column = 1
     while len(l)>0:
-        itmlst = split(l)
+        itmlst = l.split()
         if len(itmlst) == expected_len:
             try:
                 if collective == "barrier":
                     msg_siz = 0
                 else:
-                    msg_siz = atoi(itmlst[0])
-                lat = atof(itmlst[avg_lat_column])
+                    msg_siz = int(itmlst[0])
+                lat = float(itmlst[avg_lat_column])
                 result.append((msg_siz,lat))
             except Exception as e:
-                print "Error parsing "+file_name+". OMB Data corrupted. Exiting.."
+                print("Error parsing "+file_name+". OMB Data corrupted. Exiting..")
                 sys.exit()
         else:
-            print "Error parsing "+file_name+". Data format doesn't match. Exiting.."
+            print("Error parsing "+file_name+". Data format doesn't match. Exiting..")
             sys.exit()
         l = f.readline()
     return result
@@ -149,7 +147,7 @@ class AlgResult:
         self.m_msgsizlst = []
         sum_list = []
         sum_sqr_list = []
-        for i in xrange(num_run):
+        for i in range(num_run):
             file_name = "%s/%s_%dranks_run%d.out" %(raw_dir, alg, num_rank, i)
             single_result = load_single_result(file_name, collective)
             if i == 0:
@@ -171,7 +169,7 @@ class AlgResult:
             self.m_latlst[:] = sum_list[:]
             self.m_sgmlst[:] = 0.0
         else:
-            for j in xrange(len(self.m_msgsizlst)):
+            for j in range(len(self.m_msgsizlst)):
                 self.m_latlst[j] = sum_list[j]/num_run
                 # Standard deviation calculation
                 var = (sum_sqr_list[j] - sum_list[j]*sum_list[j]/num_run)/(num_run-1)
@@ -213,7 +211,7 @@ class NumRankResult:
         self.m_selectLat = [None]*len(self.m_msgsizlst)
         self.m_selectSgm = [None]*len(self.m_msgsizlst)
 
-        for i in xrange(len(self.m_msgsizlst)):
+        for i in range(len(self.m_msgsizlst)):
             for alg in self.m_result.keys():
                 if alg == 0:
                     continue
@@ -257,13 +255,13 @@ def writeResult(num_rank_list, coll_result, outfil):
     WIDTHS = [10,        12,             15,               20,             15,              20,             15]
     f = open(outfil, "w")
 
-    print >> f, ""
+    print("", file=f)
 
     fmtlst = [None]*len(TITLES)
     for i,t in enumerate(TITLES):
         fmtlst[i] = "%-" + str(WIDTHS[i]) + "s"
-        print >> f, (fmtlst[i] % t),
-    print >> f, ""
+        print((fmtlst[i] % t), end=' ', file=f)
+    print("", file=f)
 
     for num_rank in num_rank_list:
         nod_result = coll_result[num_rank]
@@ -271,32 +269,33 @@ def writeResult(num_rank_list, coll_result, outfil):
             select_alg = nod_result.selectAlg()[i]
             ref_alg = nod_result.refalg()
 
-            print >> f, (fmtlst[0] % str(num_rank)),
-            print >> f, (fmtlst[1] % str(msg_siz)),
-            print >> f, (fmtlst[2] % select_alg),
-            print >> f, (fmtlst[3] % nod_result.alglatstr(select_alg,i)),
-            print >> f, (fmtlst[4] % ref_alg),
-            print >> f, (fmtlst[5] % nod_result.alglatstr(ref_alg, i)),
+            print((fmtlst[0] % str(num_rank)), end=' ', file=f)
+            print((fmtlst[1] % str(msg_siz)), end=' ', file=f)
+            print((fmtlst[2] % select_alg), end=' ', file=f)
+            print((fmtlst[3] % nod_result.alglatstr(select_alg,i)), end=' ', file=f)
+            print((fmtlst[4] % ref_alg), end=' ', file=f)
+            print((fmtlst[5] % nod_result.alglatstr(ref_alg, i)), end=' ', file=f)
 
             selectLat = nod_result.selectLat()[i]
             reflat = nod_result.reflat()[i]
             ratstr = "%.2f" % (reflat/selectLat)
-            print >> f, (fmtlst[6] % ratstr)
+            print((fmtlst[6] % ratstr), file=f)
 
 def writeDetail(params, coll_result, outfil, num_alg, exclude_alg, two_proc_alg, num_run, num_rank_list):
     f = open(outfil, "w")
-    print >> f, "%-10s" % "#Nnodes",
-    print >> f, "%-12s" % "Message_size",
+    print("%-10s" % "#Nnodes", end=' ', file=f)
+    print("%-12s" % "Message_size", end=' ', file=f)
     for alg in range(num_alg + 1):
         if alg in exclude_alg:
             continue
-        print >> f, "%-20s" % alg,
-    print >> f, ""
+        print("%-20s" % alg, end=' ', file=f)
+    print("", file=f)
+
     for num_rank in num_rank_list:
         result = coll_result[num_rank]
         for i,msg_siz in enumerate(result.msgsizlst()):
-            print >> f, "%-10d" % num_rank,
-            print >> f, "%-12d" % msg_siz,
+            print("%-10d" % num_rank, end=' ', file=f)
+            print("%-12d" % msg_siz, end=' ', file=f)
             for alg in range(num_alg + 1):
                 if alg in exclude_alg:
                     continue
@@ -304,9 +303,9 @@ def writeDetail(params, coll_result, outfil, num_alg, exclude_alg, two_proc_alg,
                     lat_str = "No data"
                 else:
                     lat_str = result.alglatstr(alg, i)
-                print >> f, "%-20s" % lat_str,
+                print("%-20s" % lat_str, end=' ', file=f)
 
-            print >> f, "%-20s" % result.alglatstr(result.refalg(),i)
+            print("%-20s" % result.alglatstr(result.refalg(),i), file=f)
 
 
 def writeDecision(config, dir_path, outfil):
@@ -318,10 +317,10 @@ def writeDecision(config, dir_path, outfil):
     output_dir = dir_path+"/output"
     job_dir = dir_path+"/collective_jobs"
     f = open(outfil, "w")
-    print >> f, "%-10s" % num_coll, "# Number of collectives"
+    print("%-10s" % num_coll, "# Number of collectives", file=f)
     for collective in collective_list:
         if not os.path.exists(dir_path+"/output/"+collective):
-            print "Collective "+collective+" output not detected. Exiting."
+            print("Collective "+collective+" output not detected. Exiting.")
             return
 
         params = Params( job_dir+"/"+collective+".job" )
@@ -331,7 +330,7 @@ def writeDecision(config, dir_path, outfil):
         try:
             two_proc_alg = params.getInt("two_proc_alg")
         except Exception as e:
-            print "No two proc algorithm for "+collective
+            print("No two proc algorithm for "+collective)
         raw_dir = dir_path+"/output/"+collective
 
         coll_result = {}
@@ -339,15 +338,15 @@ def writeDecision(config, dir_path, outfil):
             coll_result[num_rank] = NumRankResult(config, num_alg, exclude_alg, two_proc_alg, raw_dir, num_rank, collective)
 
         writeResult(num_rank_list, coll_result, raw_dir+"/best.out")
-        print "Result wrote for "+collective+" to "+collective+"/best.out"
+        print("Result wrote for "+collective+" to "+collective+"/best.out")
 
-        print >> f, "%-10s" % coll_id_from_name(collective), "# Collective ID for", collective
+        print("%-10s" % coll_id_from_name(collective), "# Collective ID for", collective, file=f)
 
         com_sizes = len(num_rank_list)
-        print >> f, "%-10s" % com_sizes, "# Number of com sizes"
+        print("%-10s" % com_sizes, "# Number of com sizes", file=f)
         for num_rank in num_rank_list:
             nod_result = coll_result[num_rank]
-            print >> f, "%-10s" % num_rank, "# Com size"
+            print("%-10s" % num_rank, "# Com size", file=f)
             best = Params( output_dir+"/"+collective+"/best.out" )
             best_alg = 0
             # Open MPI requires that all data should start from msg size 0.
@@ -370,21 +369,21 @@ def writeDecision(config, dir_path, outfil):
                 size_output += " " + str(best_alg)
                 size_output += " 0"
                 size_output += " 0\n"
-            print >> f, "%-10s" % num_sizes, "# Number of msg sizes"
-            print >> f, size_output,
+            print("%-10s" % num_sizes, "# Number of msg sizes", file=f)
+            print(size_output, end=' ', file=f)
         writeDetail(params, coll_result, raw_dir+"/detail.out", num_alg, exclude_alg, two_proc_alg, num_run, num_rank_list)
 
 def main():
     from sys import argv
     dir_path = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists(dir_path+"/output"):
-        print "No output detected. Exiting."
+        print("No output detected. Exiting.")
         return
 
     config = Params( argv[1] )
 
     writeDecision(config, dir_path, "output/decision.file")
-    print "Tuning file written to output/decision.file"
+    print("Tuning file written to output/decision.file")
 
 if __name__ == "__main__":
     main()

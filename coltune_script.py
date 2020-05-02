@@ -46,37 +46,37 @@ def main():
         try:
             two_proc_alg = params.getInt("two_proc_alg")
         except Exception as e:
-            print "No two proc algorithm for "+collective
+            print("No two proc algorithm for "+collective)
 
         f = open(dir_path+"/output/"+collective+"/"+collective+"_coltune.sh", "w")
-        print >> f, "#!/bin/sh"
-        print >> f, "#"
+        print("#!/bin/sh", file=f)
+        print("#", file=f)
         if scheduler == "slurm":
-            print >> f, "#SBATCH --job-name="+collective
-            print >> f, "#SBATCH --output=res.txt"
-            print >> f, "#"
-            print >> f, "#SBATCH --ntasks-per-node="+str(num_core_per_node)
-            print >> f, "#SBATCH --time=1000:00:00"
-            print >> f, "#SBATCH --nodes="+str(max_num_node)
+            print("#SBATCH --job-name="+collective, file=f)
+            print("#SBATCH --output=res.txt", file=f)
+            print("#", file=f)
+            print("#SBATCH --ntasks-per-node="+str(num_core_per_node), file=f)
+            print("#SBATCH --time=1000:00:00", file=f)
+            print("#SBATCH --nodes="+str(max_num_node), file=f)
         elif scheduler == "sge":
-            print >> f, "#$ -j y"
-            print >> f, "#$ -pe mpi %d" % (max_num_node * num_core_per_node)
-            print >> f, "#"
-            print >> f, "#$ -cwd"
-            print >> f, "#"
-            print >> f, "echo Got $NSOLTS processors."
+            print("#$ -j y", file=f)
+            print("#$ -pe mpi %d" % (max_num_node * num_core_per_node), file=f)
+            print("#", file=f)
+            print("#$ -cwd", file=f)
+            print("#", file=f)
+            print("echo Got $NSOLTS processors.", file=f)
         else:
-            print "Unknown scheduler. Aborting.."
+            print("Unknown scheduler. Aborting..")
             sys.exit()
 
-        print >> f, ""
+        print("", file=f)
  
         for num_rank in num_rank_list:
             for alg in range(num_alg+1):
                 if alg in exclude_alg or (alg == two_proc_alg and num_rank > 2):
                     continue
-                print >> f, "# ", alg, num_rank, "ranks"
-                for run_id in xrange(num_run):
+                print("# ", alg, num_rank, "ranks", file=f)
+                for run_id in range(num_run):
                     if collective in imb_collectives:
                         prg_name = imb_bin+" -npmin %d %s " % (num_rank, collective)
                     else:
@@ -85,11 +85,11 @@ def main():
                     cmd += "--mca coll_tuned_use_dynamic_rules 1 --mca coll_tuned_"+collective+"_algorithm "+str(alg)
                     cmd += " " + prg_name
                     cmd += " >& " + dir_path+"/output/"+collective + "/" + str(alg) + "_" + str(num_rank) + "ranks" + "_run" + str(run_id) + ".out"
-                    print >> f, cmd
-                print >> f, ""
+                    print(cmd, file=f)
+                print("", file=f)
 
         f.close()
-        print "SGE script wrote to "+collective+"_coltune.sh successfully!"
+        print("SGE script wrote to "+collective+"_coltune.sh successfully!")
 
 if __name__ == "__main__":
     main()
