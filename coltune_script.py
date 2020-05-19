@@ -30,6 +30,7 @@ def main():
     max_num_node = config.getInt("max_num_node")
     num_core_per_node = config.getInt("number_of_cores_per_node")
     num_run = config.getInt("number_of_runs_per_test")
+    mpirun_options = config.getStr("mpirun_options")
 
     job_directory = dir_path+"/collective_jobs"
     for collective in collective_list:
@@ -82,6 +83,7 @@ def main():
                     else:
                         prg_name = omb_path+"/osu_"+collective
                     cmd = "mpirun --np %d " % (num_rank)
+                    cmd += "%s " % (mpirun_options)
                     cmd += "--mca coll_tuned_use_dynamic_rules 1 --mca coll_tuned_"+collective+"_algorithm "+str(alg)
                     cmd += " " + prg_name
                     cmd += " >& " + dir_path+"/output/"+collective + "/" + str(alg) + "_" + str(num_rank) + "ranks" + "_run" + str(run_id) + ".out"
