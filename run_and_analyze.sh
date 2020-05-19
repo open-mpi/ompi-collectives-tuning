@@ -18,14 +18,14 @@ usage()
     echo "Usage:
         $0
            -c | --config-file <config>
-           --scheduler (SGE|slurm)
+           --scheduler (PBS|SGE|slurm)
 Options:
            -h,--help
             Print help message
            --config-file (string)
             The file containing global configurations.
            --scheduler (string)
-            Specify scheduler to use, available options are SGE,slurm (default SGE." 1>&2; exit 1;
+            Specify scheduler to use, available options are PBS,SGE,slurm (default SGE)." 1>&2; exit 1;
 
 }
 
@@ -95,6 +95,19 @@ case "$scheduler" in
         done
         collective_string=$(echo $collectives | sed 's/ /,/g')
         qsub -hold_jid $collective_string $work_dir/analyze.sh -c $config_file
+    ;;
+    "PBS")
+        python coltune_script.py $config_file pbs
+        if [ $? -ne 0 ]; then
+            echo "Failed to create job scripts. Exiting.."
+            exit 1;
+        fi
+
+        for collective in ${collectives// / } ; do
+            pushd $work_dir/output/$collective/
+            qsub ${collective}_coltune.sh
+            popd
+        done
     ;;
     *) echo "Error: Unknown scheduler '$scheduler'."; usage; exit 1 ;;
 esac

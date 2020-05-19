@@ -59,6 +59,13 @@ def main():
             print("#SBATCH --ntasks-per-node="+str(num_core_per_node), file=f)
             print("#SBATCH --time=1000:00:00", file=f)
             print("#SBATCH --nodes="+str(max_num_node), file=f)
+        elif scheduler == "pbs":
+            print("#PBS -N %s" % (collective), file=f)
+            print("#PBS -o res.txt", file=f)
+            print("#PBS -l select=%d:mpiprocs=%d" % (max_num_node, num_core_per_node), file=f)
+            print("#PBS -l walltime=2:00:00", file=f)
+            print("#", file=f)
+            print('cd $PBS_O_WORKDIR', file=f)
         elif scheduler == "sge":
             print("#$ -j y", file=f)
             print("#$ -pe mpi %d" % (max_num_node * num_core_per_node), file=f)
