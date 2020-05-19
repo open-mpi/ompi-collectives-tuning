@@ -16,7 +16,7 @@ class Params:
         l = f.readline()
         while len(l):
             if l[0]!='#':
-                itmlst = l.split( ":")
+                itmlst = l.split( ":", 1)
                 if len(itmlst)==2:
                     self.m_params[itmlst[0].strip()] = itmlst[1].strip()
 
